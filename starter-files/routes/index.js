@@ -55,8 +55,13 @@ router.post(
   authController.confirmedPasswords,
   catchErrors(authController.update)
 );
+router.get("/map", storeController.mapPage);
 
 // API
 router.get('/api/search', catchErrors(storeController.searchStores));
+
+// http://localhost:7777/api/stores/near?lat=43.2&lng=-79.8
+router.get('/api/stores/near', catchErrors(storeController.mapStores));
+
 
 module.exports = router;
