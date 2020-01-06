@@ -56,12 +56,14 @@ router.post(
   catchErrors(authController.update)
 );
 router.get("/map", storeController.mapPage);
+router.get("/hearts", authController.isLoggedIn, catchErrors(storeController.getHearts));
 
 // API
-router.get('/api/search', catchErrors(storeController.searchStores));
+router.get("/api/search", catchErrors(storeController.searchStores));
 
 // http://localhost:7777/api/stores/near?lat=43.2&lng=-79.8
-router.get('/api/stores/near', catchErrors(storeController.mapStores));
+router.get("/api/stores/near", catchErrors(storeController.mapStores));
 
+router.post("/api/store/:id/heart", catchErrors(storeController.heartStore));
 
 module.exports = router;
