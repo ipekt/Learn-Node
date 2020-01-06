@@ -2,45 +2,51 @@ const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 const slug = require("slugs");
 
-const storeSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    trim: true,
-    required: "Please enter a store name!"
-  },
-  slug: String,
-  description: {
-    type: String,
-    trim: true
-  },
-  tags: [String],
-  created: {
-    type: Date,
-    default: Date.now
-  },
-  location: {
-    type: {
+const storeSchema = new mongoose.Schema(
+  {
+    name: {
       type: String,
-      default: "Point"
+      trim: true,
+      required: "Please enter a store name!"
     },
-    coordinates: [
-      {
-        type: Number,
-        required: "You must supplyu coordinates!"
-      }
-    ],
-    address: {
+    slug: String,
+    description: {
       type: String,
-      required: "You must supply an adress!"
+      trim: true
+    },
+    tags: [String],
+    created: {
+      type: Date,
+      default: Date.now
+    },
+    location: {
+      type: {
+        type: String,
+        default: "Point"
+      },
+      coordinates: [
+        {
+          type: Number,
+          required: "You must supplyu coordinates!"
+        }
+      ],
+      address: {
+        type: String,
+        required: "You must supply an adress!"
+      }
+    },
+    photo: String,
+    author: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      required: "You must supply an author"
     }
   },
-  photo: String,
-  author: {
-    type: mongoose.Schema.ObjectId,
-    ref: "User",
-    required: "You must supply an author"
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
-});
+);
 
 // Define our indexes
 storeSchema.index({
@@ -80,5 +86,13 @@ storeSchema.statics.getTagsList = function() {
     }
   ]);
 };
+
+// MongoDB properties to have around but not to be persisted.
+// It's like joins in SQL.
+storeSchema.virtual("reviews", {
+  ref: "Review", // what model to link
+  localField: "_id", // which field on store
+  foreignField: "store" // Which field on review
+});
 
 module.exports = mongoose.model("Store", storeSchema);
