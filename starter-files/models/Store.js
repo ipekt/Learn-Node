@@ -87,6 +87,36 @@ storeSchema.statics.getTagsList = function() {
   ]);
 };
 
+storeSchema.statics.getTopStores = function() {
+  return this.aggregate([
+    {
+      // lookup stores and populate their reviews
+      $lookup: {
+        from: "reviews",
+        localField: "_id",
+        foreignField: "store",
+        as: "reviews"
+      }
+    },
+    // filter for only items that have 2 or more reviews
+    { $match: { "reviews.1": { $exists: true } } },
+    // add the average reviews field
+    {
+      $project: {
+        photo: "$$ROOT.photo",
+        name: "$$ROOT.name",
+        slug: "$$ROOT.slug",
+        reviews: "$$ROOT.reviews",
+        averageRating: { $avg: "$reviews.rating" }
+      }
+    },
+    // sort it by our new field, highes reviews first
+    { $sort: { averageRating: -1 } },
+    // limit
+    { $limit: 10 }
+  ]);
+};
+
 // MongoDB properties to have around but not to be persisted.
 // It's like joins in SQL.
 storeSchema.virtual("reviews", {
@@ -94,5 +124,13 @@ storeSchema.virtual("reviews", {
   localField: "_id", // which field on store
   foreignField: "store" // Which field on review
 });
+
+function autopopulate(next) {
+  this.populate('reviews');
+  next();
+}
+
+storeSchema.pre('find', autopopulate);
+storeSchema.pre('findOne', autopopulate);
 
 module.exports = mongoose.model("Store", storeSchema);

@@ -19,6 +19,7 @@ block content
                     li.tag
                         a.tag__link(href=`/tags/${tag}`)
                             span.tag__text= tag
+        p= store.description
         
         if user
             +reviewForm(store)
