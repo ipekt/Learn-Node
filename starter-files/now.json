@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "name": "Delicous",
+  "builds": [
+    {
+      "src": "./api/start.js",
+      "use": "@now/node-server"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "@node_env",
+    "DATABASE": "@db",
+    "MAIL_USER": "@mail_user",
+    "MAIL_PASS": "@mail_pass",
+    "MAIL_HOST": "@mail_host",
+    "MAIL_PORT": "@mail_port",
+    "PORT": "@port",
+    "MAP_KEY": "@map_key",
+    "SECRET": "@secret",
+    "KEY": "@key"
+  },
+  "routes": [
+    {
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Accept"
+      },
+      "src": "/.*",
+      "dest": "./api/routes/index.js"
+    }
+  ]
+}
